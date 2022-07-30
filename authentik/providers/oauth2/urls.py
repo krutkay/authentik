@@ -6,6 +6,7 @@ from django.views.generic.base import RedirectView
 from authentik.providers.oauth2.constants import SCOPE_OPENID
 from authentik.providers.oauth2.utils import protected_resource_view
 from authentik.providers.oauth2.views.authorize import AuthorizationFlowInitView
+from authentik.providers.oauth2.views.device import DeviceView
 from authentik.providers.oauth2.views.introspection import TokenIntrospectionView
 from authentik.providers.oauth2.views.jwks import JWKSView
 from authentik.providers.oauth2.views.provider import ProviderInfoView
@@ -20,6 +21,7 @@ urlpatterns = [
         name="authorize",
     ),
     path("token/", csrf_exempt(TokenView.as_view()), name="token"),
+    path("device/", csrf_exempt(DeviceView.as_view()), name="device"),
     path(
         "userinfo/",
         csrf_exempt(protected_resource_view([SCOPE_OPENID])(UserInfoView.as_view())),

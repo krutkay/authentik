@@ -1,10 +1,12 @@
 """authentik oauth_provider urls"""
+from django.contrib.auth.decorators import login_required
 from django.urls import include, path
 from django.views.decorators.csrf import csrf_exempt
 
 from authentik.providers.oauth2.constants import SCOPE_GITHUB_ORG_READ, SCOPE_GITHUB_USER_EMAIL
 from authentik.providers.oauth2.utils import protected_resource_view
 from authentik.providers.oauth2.views.authorize import AuthorizationFlowInitView
+from authentik.providers.oauth2.views.device import DeviceEntryView
 from authentik.providers.oauth2.views.github import GitHubUserTeamsView, GitHubUserView
 from authentik.providers.oauth2.views.token import TokenView
 
@@ -35,4 +37,11 @@ github_urlpatterns = [
 
 urlpatterns = [
     path("", include(github_urlpatterns)),
+    path(
+        "device",
+        login_required(
+            DeviceEntryView.as_view(),
+        ),
+        name="device-login",
+    ),
 ]

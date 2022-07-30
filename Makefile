@@ -101,7 +101,7 @@ migrate:
 	python -m lifecycle.migrate
 
 run:
-	go run -v cmd/server/main.go
+	go run -v ./cmd/server/
 
 #########################
 ## Web
