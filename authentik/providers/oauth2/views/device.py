@@ -6,7 +6,9 @@ from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest, JsonR
 from django.urls import reverse
 from django.utils.timezone import now
 from django.views import View
+from rest_framework.throttling import AnonRateThrottle
 
+from authentik.lib.config import CONFIG
 from authentik.lib.utils.time import timedelta_from_string
 from authentik.providers.oauth2.models import DeviceToken, OAuth2Provider
 
@@ -32,6 +34,13 @@ class DeviceView(View):
         self.client_id = client_id
         self.scopes = self.request.POST.get("scope", "").split(" ")
         return None
+
+    def dispatch(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        throttle = AnonRateThrottle()
+        throttle.rate = CONFIG.y("throttle.providers.oauth2.device", "20/hour")
+        if not throttle.allow_request(request, self):
+            return HttpResponse(status_code=429)
+        return super().dispatch(request, *args, **kwargs)
 
     def post(self, request: HttpRequest) -> HttpResponse:
         """Generate device token"""
